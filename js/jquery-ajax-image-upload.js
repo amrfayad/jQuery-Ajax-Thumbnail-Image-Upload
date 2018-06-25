@@ -98,12 +98,7 @@
                     _this.cache.$imgPreviewTwo.attr('src',data.thumb[2].img_src);
                     _this.cache.$imgPreviewThree.attr('src',data.thumb[3].img_src);
                     _this.cache.$imgOriginal.attr('src',data.master.img_src);
-                    //show img data
-                    _this.cache.$imgPreview.after('<div class="img-data">'+$.objToString(data.thumb[0])+'</div>');
-                    _this.cache.$imgPreviewOne.after('<div class="img-data">'+$.objToString(data.thumb[1])+'</div>');
-                    _this.cache.$imgPreviewTwo.after('<div class="img-data">'+$.objToString(data.thumb[2])+'</div>');
-                    _this.cache.$imgPreviewThree.after('<div class="img-data">'+$.objToString(data.thumb[3])+'</div>');
-                    _this.cache.$imgOriginal.after('<div class="img-data">'+$.objToString(data.master)+'</div>');
+                    
                     $("#a_zero").attr("href" , "php/download.php?f=../"+data.thumb[0].img_src);
                     $("#a_one").attr("href" , "php/download.php?f=../"+data.thumb[1].img_src);
                     $("#a_two").attr("href" , "php/download.php?f=../"+data.thumb[2].img_src);
