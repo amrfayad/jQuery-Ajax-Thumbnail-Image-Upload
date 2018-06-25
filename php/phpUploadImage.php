@@ -7,7 +7,7 @@
     $error = $filename = $filesize = $fileloc = $thumb_name = '';
     $fileElementName = 'image-upload';
     $img_base_dir = "../img/uploaded/";
-    define ("MAX_SIZE","2000");  //define a maxim size for the uploaded images
+    define ("MAX_SIZE","10000");  //define a maxim size for the uploaded images
    // define the width and height for the thumbnail
    // note that theese dimmensions are considered the maximum dimmension and are not fixed,
    // because we have to keep the image ratio intact or it will be deformed
