@@ -11,25 +11,20 @@
  *  @since       Version 1.0
  *  @author      Sam Deering
  *  @filesource  jquery-ajax-image-upload.js
- *
+ *  
  */
 
 (function($,W,D,undefined)
 {
     W.JQUERY4U = W.JQUERY4U || {};
-
     W.JQUERY4U.AJAXIMAGEUPLOAD = {
-
         name: "jQuery Ajax Image Upload 1.0",
-
         namespace: "W.JQUERY4U.AJAXIMAGEUPLOAD",
-
         settings:
         {
             formId: '#upload-image-form',
-            uploadImageUrl: '../ajaxfileupload/php/phpUploadImage.php'
+            uploadImageUrl: './php/phpUploadImage.php'
         },
-
         cache:
         {
             //runtime data, dom elements etc...
@@ -41,9 +36,13 @@
             this.cache.$form = $(this.settings.formId);
             this.cache.$imgPreview = $('#image_preview');
             this.cache.$imgOriginal = $('#image_original');
+
+            this.cache.$imgPreviewOne = $('#image_preview_one');
+            this.cache.$imgPreviewTwo = $('#image_preview_two');
+            this.cache.$imgPreviewThree = $('#image_preview_three');
+            
             this.setupEventHandlers();
         },
-
         setupEventHandlers: function()
         {
             var _this = this;
@@ -76,10 +75,12 @@
         uploadImage: function()
         {
             var _this = this,
-                $imgInput = $('#image-upload');
-
+            $imgInput = $('#image-upload');
             this.cache.$form.find('.loading').show();
             this.cache.$imgPreview.hide();
+            this.cache.$imgPreviewOne.hide();
+            this.cache.$imgPreviewTwo.hide();
+            this.cache.$imgPreviewThree.hide();
             this.cache.$imgOriginal.hide();
             $('.img-data').remove(); //remove any previous image data
 
@@ -92,12 +93,22 @@
                 success: function(data)
                 {
                     console.log(data);
-                    _this.cache.$imgPreview.attr('src',data.thumb.img_src);
+                    _this.cache.$imgPreview.attr('src',data.thumb[0].img_src);
+                    _this.cache.$imgPreviewOne.attr('src',data.thumb[1].img_src);
+                    _this.cache.$imgPreviewTwo.attr('src',data.thumb[2].img_src);
+                    _this.cache.$imgPreviewThree.attr('src',data.thumb[3].img_src);
                     _this.cache.$imgOriginal.attr('src',data.master.img_src);
-
                     //show img data
-                    _this.cache.$imgPreview.after('<div class="img-data">'+$.objToString(data.thumb)+'</div>');
+                    _this.cache.$imgPreview.after('<div class="img-data">'+$.objToString(data.thumb[0])+'</div>');
+                    _this.cache.$imgPreviewOne.after('<div class="img-data">'+$.objToString(data.thumb[1])+'</div>');
+                    _this.cache.$imgPreviewTwo.after('<div class="img-data">'+$.objToString(data.thumb[2])+'</div>');
+                    _this.cache.$imgPreviewThree.after('<div class="img-data">'+$.objToString(data.thumb[3])+'</div>');
                     _this.cache.$imgOriginal.after('<div class="img-data">'+$.objToString(data.master)+'</div>');
+                    $("#a_zero").attr("href" , "php/download.php?f=../"+data.thumb[0].img_src);
+                    $("#a_one").attr("href" , "php/download.php?f=../"+data.thumb[1].img_src);
+                    $("#a_two").attr("href" , "php/download.php?f=../"+data.thumb[2].img_src);
+                    $("#a_three").attr("href" , "php/download.php?f=../"+data.thumb[3].img_src);
+
                     $('#remove-image-upload').show();
 
                 },
@@ -111,6 +122,9 @@
                     //hide loading image
                     _this.cache.$form.find('.loading').hide();
                     _this.cache.$imgPreview.show();
+                    _this.cache.$imgPreviewOne.show();
+                    _this.cache.$imgPreviewTwo.show();
+                    _this.cache.$imgPreviewThree.show();
                     _this.cache.$imgOriginal.show();
                 }
             });
@@ -120,7 +134,14 @@
         removeImage: function()
         {
             this.cache.$imgPreview.attr('src','img/350x150.jpg');
+            this.cache.$imgPreviewOne.attr('src','img/480x480.png');
+            this.cache.$imgPreviewTwo.attr('src','img/600x480.png');
+            this.cache.$imgPreviewThree.attr('src','img/800x480.png');
             this.cache.$imgOriginal.attr('src','');
+            $("#a_zero").removeAttr("href");
+            $("#a_one").removeAttr("href");
+            $("#a_two").removeAttr("href");
+            $("#a_three").removeAttr("href");
             $('.img-data').remove();
             $('#image-upload').val('');
             $('#remove-image-upload').hide();
@@ -129,54 +150,6 @@
 
         submitForm: function()
         {
-
-            // var $theForm = $('#submit-plugin-form'),
-            //     $formLoading = $theForm.find('.loading'),
-            //     formData = $theForm.serialize(); //get form data
-
-            // //add jquery versions
-            // var checked = $(':input[type="checkbox"]:checked').map(function(){return this.value}).get();
-            // formData += '&plugin_jquery_versions='+checked.join(", ");
-
-            // //include video thumb src
-            // formData += '&plugin_picture=' + $('#plugin_picture_img').attr('src');
-
-            // $theForm.find('.submit-error').remove(); //clear previous error msgs
-            // $theForm.find(':input').attr('disabled', 'disabled'); //lock form
-            // $formLoading.show(); //show loading image
-
-            // console.log(formData);
-
-            // $.ajax(
-            // {
-            //     type: "POST",
-            //     url: '../../../admin/php/submitPlugin.php',
-            //     dataType: "json",
-            //     data: formData,
-            //     success: function(ret)
-            //     {
-            //         console.dir(ret);
-            //         if(ret.result)
-            //         {
-            //             $theForm.slideUp(1000);
-            //             $('#singlepage').html(ret.html).fadeIn(1000);
-            //         }
-            //         else
-            //         {
-            //             $theForm.append(ret.html);
-            //         }
-            //     },
-            //     error: function(xhr, textStatus, errorThrown)
-            //     {
-            //         console.log(xhr, textStatus, errorThrown + 'error');
-            //         return false;
-            //     },
-            //     complete: function()
-            //     {
-            //         $theForm.find(':input').removeAttr('disabled'); //unlock form
-            //         $formLoading.hide(); //show loading image
-            //     }
-            // });
 
         }
 

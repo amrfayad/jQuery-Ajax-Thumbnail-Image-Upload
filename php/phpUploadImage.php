@@ -15,6 +15,15 @@
    define ("HEIGHT","150");
 
 
+   $dimentions = array(
+       array("width" => 350 ,"height" => 150),
+       array("width" => 480 ,"height" => 480),
+       array("width" => 600 ,"height" => 480),
+       array("width" => 800 ,"height" => 480)
+       
+   );
+    $thumbs = array() ; 
+    $thumbs_names = array() ; 
     if(!empty($_FILES[$fileElementName]['error']))
     {
         switch($_FILES[$fileElementName]['error'])
@@ -168,19 +177,24 @@
             }
             else
             {
-              // the new thumbnail image will be placed in images/thumbs/ folder
-              $thumb_name= $img_base_dir . 'temp/thumbs/'.$image_name .'_350.'.$extension;
-              // call the function that will create the thumbnail. The function will get as parameters
-              //the image name, the thumbnail name and the width and height desired for the thumbnail
-              $thumb=make_thumb($master_name,$thumb_name,WIDTH,HEIGHT);
+                foreach ($dimentions as $dimention)
+                {
+                     // the new thumbnail image will be placed in images/thumbs/ folder
+                    $thumb_name= $img_base_dir . 'temp/thumbs/'.$dimention['width'].'x'.$dimention['height'].'/'.$image_name .'_350.'.$extension;
+                    // call the function that will create the thumbnail. The function will get as parameters
+                    //the image name, the thumbnail name and the width and height desired for the thumbnail
+                    $thumb=make_thumb($master_name,$thumb_name,$dimention['width'],$dimention['height']);
+                    $thumbs[] = $thumb ; 
+                    $thumbs_names[] = $thumb_name ; 
+                }
             }}
         }
     }
 
 
-      //--------- END SECOND SCRIPT --------------------------------------------------------------------
+             //--------- END SECOND SCRIPT --------------------------------------------------------------------
 
-      //return variables to javascript
+            //return variables to javascript
             $filename = $_FILES[$fileElementName]['name'];
             $filesize = $sizekb;
             $fileloc = $thumb_name;
@@ -191,11 +205,22 @@
             $masterWH = getimagesize($master_name);
             $masterW = $masterWH[0];
             $masterH = $masterWH[1];
-            $thumbWH = getimagesize($thumb_name);
+            /*$thumbWH = getimagesize($thumb_name);
             $thumbW = $thumbWH[0];
-            $thumbH = $thumbWH[1];
+            $thumbH = $thumbWH[1];*/
     }
-
+    $res = array() ; 
+    foreach($thumbs_names as $thumb_name){
+        $thumbWH = getimagesize($thumb_name);
+        $thumbW = $thumbWH[0];
+        $thumbH = $thumbWH[1];
+        $res[] = array(
+                "img_src" => str_replace("../", "", $thumb_name), //tweak return path of img
+                "size" => round((filesize($thumb_name)/1000), 0) . 'kb',
+                'h' => $thumbH,
+                'w' => $thumbW)
+            ;
+    }
     $ret = array(
         "master" => array(
             "orig_name" => $filename,
@@ -204,12 +229,7 @@
             'h' => $masterH,
             'w' => $masterW
         ),
-        "thumb" => array(
-            "img_src" => str_replace("../", "", $thumb_name), //tweak return path of img
-            "size" => round((filesize($thumb_name)/1000), 0) . 'kb',
-            'h' => $thumbH,
-            'w' => $thumbW
-        )
+        "thumb" => $res 
     );
 
     if ($error !== "")
